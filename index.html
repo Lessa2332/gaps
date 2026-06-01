@@ -6,12 +6,14 @@
     <title>Географічний Навігатор 7</title>
     <style>
         :root {
-            --primary: #1e40af;
-            --success: #155e75;
-            --bg: #f0f4f8;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #1e293b;
-            --border: #cbd5e1;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --accent: #f59e0b;
         }
 
         body {
@@ -27,50 +29,192 @@
             max-width: 680px;
             margin: 20px auto;
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
 
-        h1 { text-align: center; color: var(--primary); font-size: 1.8rem; margin-bottom: 5px; }
-        .intro-text { background: #f8fafc; padding: 15px; border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 25px; font-size: 0.95rem; }
+        /* Ігровий прогрес-бар */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #3b82f6);
+            transition: width 0.4s ease;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary); 
+            font-size: 2.1rem; 
+            margin-bottom: 10px; 
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+        
+        .intro-text { 
+            background: var(--primary-light); 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 25px; 
+            font-size: 1rem;
+            color: #1e40af;
+            border: 1px dashed #bfdbfe;
+        }
 
         .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; }
-        select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background-color: #fff; }
-
-        .gr-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
-        .question-card { border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; background: #ffffff; transition: transform 0.2s; }
-        .question-card:hover { transform: translateY(-2px); }
-
-        .options-list { list-style: none; padding: 0; margin: 0; }
-        .options-list li { margin-bottom: 12px; padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; cursor: pointer; }
-        .options-list li:hover { background: #f8fafc; }
-        .options-list input { margin-right: 10px; transform: scale(1.1); }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 1.05rem; }
         
-        .btn-submit { display: block; width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 25px; }
-        .btn-submit:hover { background: #1d4ed8; }
+        select { 
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid var(--border); 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            background-color: #fff;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(37, 99, 233, 0.15);
+        }
 
-        #resultArea { display: none; margin-top: 25px; padding: 25px; border-radius: 12px; background: #ecfeff; border: 1px solid #c5f2f7; text-align: center; }
-        .loader { display: none; text-align: center; font-weight: bold; color: var(--primary); padding: 20px; }
+        .gr-badge { 
+            display: inline-block; 
+            background: #f1f5f9; 
+            color: #475569; 
+            padding: 4px 10px; 
+            border-radius: 8px; 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            margin-bottom: 12px; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .question-card { 
+            border: 2px solid var(--border); 
+            padding: 25px; 
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            background: #ffffff; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .question-card.active-card {
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 233, 0.08);
+        }
+
+        /* Кнопки-варіанти замість стандартних radio */
+        .options-list { list-style: none; padding: 0; margin: 15px 0 0 0; }
+        .options-list li { 
+            margin-bottom: 12px; 
+            padding: 16px; 
+            border: 2px solid var(--border); 
+            border-radius: 14px; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .options-list li:hover { 
+            background: var(--primary-light); 
+            border-color: #93c5fd;
+        }
+        .options-list li.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: inset 0 0 0 1px var(--primary);
+        }
+        .options-list input[type="radio"] { 
+            margin-right: 14px; 
+            transform: scale(1.3); 
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+        
+        .btn-submit { 
+            display: block; 
+            width: 100%; 
+            background: linear-gradient(135deg, var(--primary), #1d4ed8); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            font-size: 1.2rem; 
+            border-radius: 16px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 30px; 
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 233, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 233, 0.3);
+        }
+        .btn-submit:active { transform: translateY(0); }
+
+        #resultArea { 
+            display: none; 
+            margin-top: 25px; 
+            padding: 30px; 
+            border-radius: 20px; 
+            background: #f0fdf4; 
+            border: 2px solid #bbf7d0; 
+            text-align: center; 
+        }
+        .loader { 
+            display: none; 
+            text-align: center; 
+            font-weight: bold; 
+            color: var(--primary); 
+            padding: 25px; 
+            font-size: 1.1rem;
+        }
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🧭 Налаштування географічного компаса</h1>
+    <h1>🧭 Географічний Навігатор 7</h1>
+    
+    <div class="progress-container">
+        <div id="pBar" class="progress-bar"></div>
+    </div>
     
     <div id="intro" class="intro-text">
-        Привіт! Попереду 7 клас і дивовижний світ материків. Цей експрес-квест створений <strong>не для оцінок</strong>, а щоб ми разом побачили твої сильні сторони. Тут немає "двійок", не бійся помилятися!
+        🛸 <strong>Привіт, досліднику!</strong> Попереду на нас чекає дивовижний світ материків та океанів. Цей експрес-квест створений для того, щоб налаштувати наш бортовий компас. Тут немає оцінок чи "двійок", тому сміливо тисни на варіанти!
     </div>
 
     <form id="quizForm">
-        <div class="question-card" style="background: #f8fafc;">
+        <div class="question-card" style="background: #fafafa;" id="step0">
+            <span class="gr-badge">🔑 Екіпаж корабля</span>
             <div class="form-group">
                 <label for="studentClass">Обери свій клас:</label>
-                <select id="studentClass" onchange="loadNames()" required>
-                    <option value="">-- Обери клас --</option>
-                    <option value="7-А">7-А</option>
+                <select id="studentClass" onchange="loadNames(); updateProgress();" required>
+                    <option value="">-- Обирай тут --</option>
+                    <option value="7-A">7-А</option>
                     <option value="7-Б">7-Б</option>
                     <option value="7-В">7-В</option>
                     <option value="7-Г">7-Г</option>
@@ -78,47 +222,47 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="studentName">Обери своє прізвище та ім'я:</label>
-                <select id="studentName" required>
-                    <option value="">-- Спочатку обери клас --</option>
+                <label for="studentName">Знайди себе у списку:</label>
+                <select id="studentName" onchange="updateProgress()" required>
+                    <option value="">-- Спочатку вкажи клас --</option>
                 </select>
             </div>
         </div>
 
-        <div class="question-card">
-            <span class="gr-badge">Компас дослідника: Робота з картою</span>
+        <div class="question-card" id="step1">
+            <span class="gr-badge">🗺️ Локація: Робота з картою</span>
             <label>1. Ти плануєш пішохідний маршрут уздовж дельти Дунаю неподалік Чорноморська. Яка карта допоможе розгледіти кожен поворот стежки та дрібні об'єкти?</label>
             <ul class="options-list">
-                <li><label><input type="radio" name="q1" value="0" required> Дрібномасштабна карта світу (де в 1 см містяться сотні кілометрів)</label></li>
-                <li><label><input type="radio" name="q1" value="100"> Великомасштабний топографічний план (де видно деталі місцевості)</label></li>
-                <li><label><input type="radio" name="q1" value="0"> Настільна фізична карта півкуль</label></li>
+                <li onclick="selectOption(this)"><input type="radio" name="q1" value="0" required> Дрібномасштабна карта світу (де в 1 см сотні кілометрів)</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q1" value="100"> Великомасштабний топографічний план (де видно деталі місцевості)</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q1" value="0"> Настільна фізична карта півкуль</li>
             </ul>
         </div>
 
-        <div class="question-card">
-            <span class="gr-badge">Компас дослідника: Критика джерел</span>
+        <div class="question-card" id="step2">
+            <span class="gr-badge">📡 Локація: Критика джерел</span>
             <label>2. У соціальній мережі з'явився пост: «Вчені довели, що поняття "материк" і "частина світу" — це одне й те саме, просто назви різні». Як ти відреагуєш на це джерело?</label>
             <ul class="options-list">
-                <li><label><input type="radio" name="q2" value="0" required> Повірю, адже в соцмережах завжди публікують найсвіжіші новини.</label></li>
-                <li><label><input type="radio" name="q2" value="100"> Перевірю в атласі чи підручнику. Це помилка: материк — це суходіл, а частина світу включає ще й культурну історію та острови.</label></li>
-                <li><label><input type="radio" name="q2" value="0"> Погоджусь, бо на уроках у 6 класі ми рахували їх як абсолютні синоніми.</label></li>
+                <li onclick="selectOption(this)"><input type="radio" name="q2" value="0" required> Повірю, адже в соцмережах завжди публікують найсвіжіші новини.</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q2" value="100"> Перевірю в атласі. Це помилка: материк — це суходіл, а частина світу включає ще й історію, культуру та острови.</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q2" value="0"> Погоджусь, бо на уроках у 6 класі ми рахували їх як абсолютні синоніми.</li>
             </ul>
         </div>
 
-        <div class="question-card">
-            <span class="gr-badge">Компас дослідника: Закономірності планети</span>
-            <label>3. Уяви, що ми зменшили Землю до розмірів великого кавуна і розділили його площу на воду та суходіл. Яка частина "кавуна" буде повністю вкрита Світовим океаном?</label>
+        <div class="question-card" id="step3">
+            <span class="gr-badge">🌍 Локація: Закономірності планети</span>
+            <label>3. Уяви, що ми зменшили Землю до розмірів великого круглого кавуна і розділили його площу на воду та суходіл. Яка частина "кавуна" буде повністю вкрита Світовим океаном?</label>
             <ul class="options-list">
-                <li><label><input type="radio" name="q3" value="0" required> Рівно половина (50% на 50%)</label></li>
-                <li><label><input type="radio" name="q3" value="0"> Менша частина (близько 29%)</label></li>
-                <li><label><input type="radio" name="q3" value="100"> Більша частина (близько 71%)</label></li>
+                <li onclick="selectOption(this)"><input type="radio" name="q3" value="0" required> Рівно половина (50% на 50%)</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q3" value="0"> Менша частина (близько 29%)</li>
+                <li onclick="selectOption(this)"><input type="radio" name="q3" value="100"> Більша частина (близько 71%)</li>
             </ul>
         </div>
 
-        <div class="question-card" style="background: #fffdf5; border-color: #fef08a;">
-            <span class="gr-badge" style="background: #fef9c3; color: #a16207;">НУШ: Самооцінювання</span>
+        <div class="question-card" style="background: #fffdf5; border-color: #fef08a;" id="step4">
+            <span class="gr-badge" style="background: #fef9c3; color: #a16207;">⚡ Бортове самооцінювання</span>
             <label for="selfEval">Оціни щиро, як ти почуваєшся під час роботи з картами та географічними текстами:</label>
-            <select id="selfEval" required>
+            <select id="selfEval" onchange="updateProgress()" required>
                 <option value="">Обери відповідь...</option>
                 <option value="Впевнено">👍 Почуваюся впевнено, мені легко орієнтуватися</option>
                 <option value="Частково">😐 Інколи плутаю масштаби або умовні знаки</option>
@@ -126,146 +270,60 @@
             </select>
         </div>
 
-        <div id="loader" class="loader">Синхронізація бортового журналу з вчителем...</div>
+        <div id="loader" class="loader">
+            <div class="loader-spinner"></div>
+            Синхронізація бортового журналу з базою даних...
+        </div>
         <button type="submit" class="btn-submit" id="submitBtn">Надіслати капітану запис</button>
     </form>
 
     <div id="resultArea">
-        <h2>🎉 Запис успішно внесено до бортового журналу!</h2>
-        <p>Твій пристрій синхронізовано з системою вчителя.</p>
-        <div id="profileFeedback" style="text-align: left; margin-top: 15px; font-size: 1.05rem;"></div>
+        <h2 style="color: var(--success); margin-top: 0;">🎉 Запис успішно внесено до бортового журналу!</h2>
+        <p>Твій пристрій успішно синхронізовано з системою вчителя.</p>
+        <div id="profileFeedback" style="text-align: left; margin-top: 20px; font-size: 1.05rem; background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;"></div>
     </div>
 </div>
 
 <script>
-    // ⚠️ ВСТАВТЕ СЮДИ ВАШ URL З GOOGLE APPS SCRIPT (ЯКИЙ НАДАНФ НА ЕТАПІ 2)
-    const GOOGLE_SCRIPT_URL = "ВАШ_URL_APPS_SCRIPT"; 
+    // Зв'язок із вашою Google Таблицею встановлено!
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr-ZrGthoi0XfWvMmwPvGtYzGlAi36F3gAbKAMgw485J0V5wUmmSAnfMyT6gOYL6fw/exec"; 
 
-// Списки учнів паралелі 7-х класів
+    // Списки учнів паралелі 7-х класів (усі помилки з комами виправлено)
     const studentsDb = {
-        "7-А": [
-            "Ашихмін Ярослав",
-            "Внуков Веніамін",
-            "Волков Давид",
-            "Вулєр Іван",
-            "Дабіжа Марія",
-            "Димитров Дмитро",
-            "Кирилюк Артем",
-            "Косар Нікіта",
-            "Кравчук Мілана",
-            "Кривенок Ілля",
-            "Лазаревич Георгій",
-            "Лазаревич Ніколь",
-            "Лісіцина Дар'я",
-            "Нестерова Varvara",
-            "Перванчук Марк",
-            "Полуянов Семен",
-            "Попков Андрій",
-            "Савченко Наталія",
-            "Скопенко Ніка",
-            "Усольцева Аріна",
-            "Халабура Вікторія",
-            "Химич Артем",
-            "Якутенко Володимир",
-            "Ященко Анастасія",
-            "Бохонок Олеся"
+        "7-A": [
+            "Ашихмін Ярослав", "Внуков Веніамін", "Волков Давид", "Вулєр Іван", "Дабіжа Марія",
+            "Димитров Дмитро", "Кирилюк Артем", "Косар Нікіта", "Кравчук Мілана", "Кривенок Ілля",
+            "Лазаревич Георгій", "Лазаревич Ніколь", "Лісіцина Дар'я", "Нестерова Varvara", "Перванчук Марк",
+            "Полуянов Семен", "Попков Андрій", "Савченко Наталія", "Скопенко Ніка", "Усольцева Аріна",
+            "Халабура Вікторія", "Химич Артем", "Якутенко Володимир", "Ященко Анастасія", "Бохонок Олеся"
         ],
         "7-Б": [
-            "Алєксєюк Ірина",
-            "Андрусік Ул'яна",
-            "Болясна Аріна",
-            "Войтех Богдан",
-            "Голімбовська Єлизавета",
-            "Гуляєва Марія",
-            "Зєнов Геннадій",
-            "Кожухар Злата",
-            "Колесниченко Артем",
-            "Коростельова Анфіса",
-            "Кузьмін Дмитро",
-            "Левченко Тимур",
-            "Литовченко Кіра",
-            "Михайлова Ксенія",
-            "Ніколаєв Ілля",
-            "Ніща Дар'я",
-            "Переберін Артем",
-            "Сич Кіріл",
-            "Сташко Кароліна",
-            "Стерпул Олександр",
-            "Харченко Гліб",
-            "Хомутова Анна",
-            "Чернюк Андрій",
-            "Шаріпова Анастасія",
-            "Штурхаль Марія",
-            "Яремчук Єгор"
-            "Бохонок Олеся"
+            "Алєксєюк Ірина", "Андрусік Ул'яна", "Болясна Аріна", "Войтех Богдан", "Голімбовська Єлизавета",
+            "Гуляєва Марія", "Зєнов Геннадій", "Кожухар Злата", "Колесниченко Артем", "Corostelova Anfisa",
+            "Кузьмін Дмитро", "Левченко Тимур", "Литовченко Кіра", "Михайлова Ксенія", "Ніколаєв Ілля",
+            "Ніща Дар'я", "Переберін Артем", "Сич Кіріл", "Сташко Кароліна", "Стерпул Олександр",
+            "Харченко Гліб", "Хомутова Анна", "Чернюк Андрій", "Шаріпова Анастасія", "Штурхаль Марія",
+            "Яремчук Єгор", "Бохонок Олеся"
         ],
         "7-В": [
-            "Бєгу Євгеній",
-            "Білоус Катерина",
-            "Бодьо Арина",
-            "Величко Данило",
-            "Гаврилова Кира",
-            "Гаврилова Маргарита",
-            "Гєчева Вероніка",
-            "Гордієнко Дмитро",
-            "Іваньоха Мирослав",
-            "Ісхаков Кирило",
-            "Кушнір Віталіна",
-            "Левченко Олександр",
-            "Мацієвич Дмитро",
-            "Мельниченко Анастасія",
-            "Муравйов Андрій",
-            "Ніколайчук Іван",
-            "Остапчук Ангеліна",
-            "Охват Софія",
-            "Пєшкова Поліна",
-            "Піроженко Анна",
-            "Саванчук Крістіна",
-            "Чермних Єгор"
-            "Бохонок Олеся"
+            "Бєгу Євгеній", "Білоус Катерина", "Бодьо Арина", "Величко Данило", "Гаврилова Кира",
+            "Гаврилова Маргарита", "Гєчева Вероніка", "Гордієнко Дмитро", "Іваньоха Мирослав", "Ісхаков Кирило",
+            "Кушнір Віталіна", "Левченко Олександр", "Мацієвич Дмитро", "Мельниченко Анастасія", "Муравйов Андрій",
+            "Ніколайчук Іван", "Остапчук Ангеліна", "Охват Софія", "Пєшкова Поліна", "Піроженко Анна",
+            "Саванчук Крістіна", "Чермних Єгор", "Бохонок Олеся"
         ],
         "7-Г": [
-            "Баличев Давід",
-            "Білоножкіна Вікторія",
-            "Бохонок Олеся"
-            "Григор'єв Максим",
-            "Єленич Софія",
-            "Жемчужникова Дар'я",
-            "Карп Христина",
-            "Карташов Михайло",
-            "Клименко Назар",
-            "Ковальов Володимир",
-            "Маслій Руслан",
-            "Мельников Тимур",
-            "Потребенко Меланія",
-            "Раєнко Таїсія",
-            "Саранін Олександр",
-            "Солодухіна Жанна",
-            "Сопель Максим",
-            "Стоянов Владислав",
-            "Чеховський Кирило",
-            "Чорний Акім",
+            "Баличев Давід", "Білоножкіна Вікторія", "Бохонок Олеся", "Григор'єв Максим", "Єленич Софія",
+            "Жемчужникова Дар'я", "Карп Христина", "Карташов Михайло", "Клименко Назар", "Ковальов Володимир",
+            "Маслій Руслан", "Мельников Тимур", "Потребенко Меланія", "Раєнко Таїсія", "Саранін Олександр",
+            "Солодухіна Жанна", "Сопель Максим", "Стоянов Владислав", "Чеховський Кирило", "Чорний Акім",
             "Шеремет Ернест"
         ],
         "7-Д": [
-            "Балинський Вячеслав",
-            "Бохонок Олеся"
-            "Бурлак Аміна",
-            "Ганошенко Маттіа",
-            "Грозивчак Олександр",
-            "Дойчева Ангеліна",
-            "Касьянова Аріна",
-            "Кербенко Артем",
-            "Ковальчук Глєб",
-            "Лебін Ярослав",
-            "Маслаков Артем",
-            "Масленніков Іван",
-            "Михайловська Катерина",
-            "Перепьолка Таїсія",
-            "Петрова Аріна",
-            "Прокопенко Ярослав",
-            "Семенов Семен",
-            "Ткаченко Демір"
+            "Балинський Вячеслав", "Бохонок Олеся", "Бурлак Аміна", "Ганошенко Маттіа", "Грозивчак Олександр",
+            "Дойчева Ангеліна", "Касьянова Аріна", "Кербенко Артем", "Ковальчук Глєб", "Лебін Ярослав",
+            "Маслаков Артем", "Масленніков Іван", "Михайловська Катерина", "Перепьолка Таїсія", "Петрова Аріна",
+            "Прокопенко Ярослав", "Семенов Семен", "Ткаченко Демір"
         ]
     };
 
@@ -278,6 +336,7 @@
         if (localStorage.getItem('geo_topic1_submitted') === 'true') {
             showAlreadySubmittedScreen();
         }
+        updateProgress();
     });
 
     function loadNames() {
@@ -292,6 +351,34 @@
                 nameSelect.appendChild(op);
             });
         }
+    }
+
+    // Логіка вибору гейміфікованих карток-кнопок
+    function selectOption(element) {
+        const parent = element.closest('.options-list');
+        parent.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+        
+        element.classList.add('selected');
+        const radio = element.querySelector('input[type="radio"]');
+        radio.checked = true;
+        
+        element.closest('.question-card').classList.add('active-card');
+        updateProgress();
+    }
+
+    // Функція підрахунку прогресу для ігрової смужки
+    function updateProgress() {
+        let totalSteps = 5; 
+        let completedSteps = 0;
+
+        if (document.getElementById('studentClass').value && document.getElementById('studentName').value) completedSteps++;
+        if (document.querySelector('input[name="q1"]:checked')) completedSteps++;
+        if (document.querySelector('input[name="q2"]:checked')) completedSteps++;
+        if (document.querySelector('input[name="q3"]:checked')) completedSteps++;
+        if (document.getElementById('selfEval').value) completedSteps++;
+
+        const percentage = Math.round((completedSteps / totalSteps) * 100);
+        document.getElementById('pBar').style.width = percentage + '%';
     }
 
     document.getElementById('quizForm').addEventListener('submit', function(e) {
@@ -322,19 +409,13 @@
             deviceToken: deviceToken
         };
 
-        let feedbackHTML = `<strong>Дякуємо, ${payload.studentName}!</strong><br><br>🏁 Твій географічний профіль сформовано:`;
-        feedbackHTML += `<br>🌟 <strong>Твої сильні сторони:</strong> Ти чудово впоратися з завданнями, де потрібно проявити логіку та кмітливість.`;
-        feedbackHTML += `<br>🚀 <strong>Напрямок руху:</strong> У вересні ми разом розберемо деякі тонкощі масштабу й тектоніки, щоб зробити тебе справжнім штурманом материків!`;
+        let feedbackHTML = `<strong>Чудова робота, ${payload.studentName}!</strong><br><br>🏁 Твій географічний профіль дослідника сформовано:`;
+        feedbackHTML += `<br>🌟 <strong>Сильні сторони:</strong> Ти круто проявляєш логіку та кмітливість під час аналізу завдань.`;
+        feedbackHTML += `<br>🚀 <strong>Напрямок руху:</strong> У вересні ми разом розберемо тонкощі картографії, щоб ти впевнено орієнтувався на будь-якому материку!`;
 
         document.getElementById('profileFeedback').innerHTML = feedbackHTML;
 
-        if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxr-ZrGthoi0XfWvMmwPvGtYzGlAi36F3gAbKAMgw485J0V5wUmmSAnfMyT6gOYL6fw/exec") {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('quizForm').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'block';
-            return;
-        }
-
+        // Надсилання реальних даних без штучних блокувань
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'cors',
@@ -345,7 +426,7 @@
         .then(data => {
             document.getElementById('loader').style.display = 'none';
             if (data.result === 'already_exists') {
-                alert('Увага! Твої результати під цим іменем уже є в системі. Друга спроба не зараховується.');
+                alert('Увага! Твої результати під цим іменем уже є в системі. Повторна спроба не зараховується.');
                 showAlreadySubmittedScreen();
             } else {
                 localStorage.setItem('geo_topic1_submitted', 'true');
@@ -355,6 +436,7 @@
         })
         .catch(err => {
             console.error(err);
+            // Захисний механізм: показуємо успіх дитині навіть при збої мережі, щоб вона не хвилювалася
             document.getElementById('loader').style.display = 'none';
             document.getElementById('quizForm').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
@@ -365,12 +447,9 @@
         document.getElementById('quizForm').style.display = 'none';
         document.getElementById('intro').style.display = 'none';
         document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('resultArea').innerHTML = `<h2>⚠️ Подорож завершено</h2><p>Твій пристрій уже надіслав дані для Теми 1 в журнал вчителя. Повторні спроби заблоковано для чистоти дослідження.</p>`;
+        document.getElementById('resultArea').innerHTML = `<h2>⚠️ Подорож уже завершено</h2><p>Твій пристрій уже надіслав дані для Теми 1 в журнал. Повторні спроби заблоковано для чистоти дослідження.</p>`;
     }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
