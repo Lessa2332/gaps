@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Географічний Навігатор 7</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --success: #155e75;
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+
+        h1 { text-align: center; color: var(--primary); font-size: 1.8rem; margin-bottom: 5px; }
+        .intro-text { background: #f8fafc; padding: 15px; border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 25px; font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; background-color: #fff; }
+
+        .gr-badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
+        .question-card { border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; background: #ffffff; transition: transform 0.2s; }
+        .question-card:hover { transform: translateY(-2px); }
+
+        .options-list { list-style: none; padding: 0; margin: 0; }
+        .options-list li { margin-bottom: 12px; padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; cursor: pointer; }
+        .options-list li:hover { background: #f8fafc; }
+        .options-list input { margin-right: 10px; transform: scale(1.1); }
+        
+        .btn-submit { display: block; width: 100%; background: var(--primary); color: white; border: none; padding: 15px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 25px; }
+        .btn-submit:hover { background: #1d4ed8; }
+
+        #resultArea { display: none; margin-top: 25px; padding: 25px; border-radius: 12px; background: #ecfeff; border: 1px solid #c5f2f7; text-align: center; }
+        .loader { display: none; text-align: center; font-weight: bold; color: var(--primary); padding: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🧭 Налаштування географічного компаса</h1>
+    
+    <div id="intro" class="intro-text">
+        Привіт! Попереду 7 клас і дивовижний світ материків. Цей експрес-квест створений <strong>не для оцінок</strong>, а щоб ми разом побачили твої сильні сторони. Тут немає "двійок", не бійся помилятися!
+    </div>
+
+    <form id="quizForm">
+        <div class="question-card" style="background: #f8fafc;">
+            <div class="form-group">
+                <label for="studentClass">Обери свій клас:</label>
+                <select id="studentClass" onchange="loadNames()" required>
+                    <option value="">-- Обери клас --</option>
+                    <option value="7-А">7-А</option>
+                    <option value="7-Б">7-Б</option>
+                    <option value="7-В">7-В</option>
+                    <option value="7-Г">7-Г</option>
+                    <option value="7-Д">7-Д</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="studentName">Обери своє прізвище та ім'я:</label>
+                <select id="studentName" required>
+                    <option value="">-- Спочатку обери клас --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <span class="gr-badge">Компас дослідника: Робота з картою</span>
+            <label>1. Ти плануєш пішохідний маршрут уздовж дельти Дунаю неподалік Чорноморська. Яка карта допоможе розгледіти кожен поворот стежки та дрібні об'єкти?</label>
+            <ul class="options-list">
+                <li><label><input type="radio" name="q1" value="0" required> Дрібномасштабна карта світу (де в 1 см містяться сотні кілометрів)</label></li>
+                <li><label><input type="radio" name="q1" value="100"> Великомасштабний топографічний план (де видно деталі місцевості)</label></li>
+                <li><label><input type="radio" name="q1" value="0"> Настільна фізична карта півкуль</label></li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <span class="gr-badge">Компас дослідника: Критика джерел</span>
+            <label>2. У соціальній мережі з'явився пост: «Вчені довели, що поняття "материк" і "частина світу" — це одне й те саме, просто назви різні». Як ти відреагуєш на це джерело?</label>
+            <ul class="options-list">
+                <li><label><input type="radio" name="q2" value="0" required> Повірю, адже в соцмережах завжди публікують найсвіжіші новини.</label></li>
+                <li><label><input type="radio" name="q2" value="100"> Перевірю в атласі чи підручнику. Це помилка: материк — це суходіл, а частина світу включає ще й культурну історію та острови.</label></li>
+                <li><label><input type="radio" name="q2" value="0"> Погоджусь, бо на уроках у 6 класі ми рахували їх як абсолютні синоніми.</label></li>
+            </ul>
+        </div>
+
+        <div class="question-card">
+            <span class="gr-badge">Компас дослідника: Закономірності планети</span>
+            <label>3. Уяви, що ми зменшили Землю до розмірів великого кавуна і розділили його площу на воду та суходіл. Яка частина "кавуна" буде повністю вкрита Світовим океаном?</label>
+            <ul class="options-list">
+                <li><label><input type="radio" name="q3" value="0" required> Рівно половина (50% на 50%)</label></li>
+                <li><label><input type="radio" name="q3" value="0"> Менша частина (близько 29%)</label></li>
+                <li><label><input type="radio" name="q3" value="100"> Більша частина (близько 71%)</label></li>
+            </ul>
+        </div>
+
+        <div class="question-card" style="background: #fffdf5; border-color: #fef08a;">
+            <span class="gr-badge" style="background: #fef9c3; color: #a16207;">НУШ: Самооцінювання</span>
+            <label for="selfEval">Оціни щиро, як ти почуваєшся під час роботи з картами та географічними текстами:</label>
+            <select id="selfEval" required>
+                <option value="">Обери відповідь...</option>
+                <option value="Впевнено">👍 Почуваюся впевнено, мені легко орієнтуватися</option>
+                <option value="Частково">😐 Інколи плутаю масштаби або умовні знаки</option>
+                <option value="Потребую підтримки">❓ Мені важко читати карти, потрібна допомога</option>
+            </select>
+        </div>
+
+        <div id="loader" class="loader">Синхронізація бортового журналу з вчителем...</div>
+        <button type="submit" class="btn-submit" id="submitBtn">Надіслати капітану запис</button>
+    </form>
+
+    <div id="resultArea">
+        <h2>🎉 Запис успішно внесено до бортового журналу!</h2>
+        <p>Твій пристрій синхронізовано з системою вчителя.</p>
+        <div id="profileFeedback" style="text-align: left; margin-top: 15px; font-size: 1.05rem;"></div>
+    </div>
+</div>
+
+<script>
+    // ⚠️ ВСТАВТЕ СЮДИ ВАШ URL З GOOGLE APPS SCRIPT (ЯКИЙ НАДАНФ НА ЕТАПІ 2)
+    const GOOGLE_SCRIPT_URL = "ВАШ_URL_APPS_SCRIPT"; 
+
+// Списки учнів паралелі 7-х класів
+    const studentsDb = {
+        "7-А": [
+            "Ашихмін Ярослав",
+            "Внуков Веніамін",
+            "Волков Давид",
+            "Вулєр Іван",
+            "Дабіжа Марія",
+            "Димитров Дмитро",
+            "Кирилюк Артем",
+            "Косар Нікіта",
+            "Кравчук Мілана",
+            "Кривенок Ілля",
+            "Лазаревич Георгій",
+            "Лазаревич Ніколь",
+            "Лісіцина Дар'я",
+            "Нестерова Varvara",
+            "Перванчук Марк",
+            "Полуянов Семен",
+            "Попков Андрій",
+            "Савченко Наталія",
+            "Скопенко Ніка",
+            "Усольцева Аріна",
+            "Халабура Вікторія",
+            "Химич Артем",
+            "Якутенко Володимир",
+            "Ященко Анастасія",
+            "Бохонок Олеся"
+        ],
+        "7-Б": [
+            "Алєксєюк Ірина",
+            "Андрусік Ул'яна",
+            "Болясна Аріна",
+            "Войтех Богдан",
+            "Голімбовська Єлизавета",
+            "Гуляєва Марія",
+            "Зєнов Геннадій",
+            "Кожухар Злата",
+            "Колесниченко Артем",
+            "Коростельова Анфіса",
+            "Кузьмін Дмитро",
+            "Левченко Тимур",
+            "Литовченко Кіра",
+            "Михайлова Ксенія",
+            "Ніколаєв Ілля",
+            "Ніща Дар'я",
+            "Переберін Артем",
+            "Сич Кіріл",
+            "Сташко Кароліна",
+            "Стерпул Олександр",
+            "Харченко Гліб",
+            "Хомутова Анна",
+            "Чернюк Андрій",
+            "Шаріпова Анастасія",
+            "Штурхаль Марія",
+            "Яремчук Єгор"
+            "Бохонок Олеся"
+        ],
+        "7-В": [
+            "Бєгу Євгеній",
+            "Білоус Катерина",
+            "Бодьо Арина",
+            "Величко Данило",
+            "Гаврилова Кира",
+            "Гаврилова Маргарита",
+            "Гєчева Вероніка",
+            "Гордієнко Дмитро",
+            "Іваньоха Мирослав",
+            "Ісхаков Кирило",
+            "Кушнір Віталіна",
+            "Левченко Олександр",
+            "Мацієвич Дмитро",
+            "Мельниченко Анастасія",
+            "Муравйов Андрій",
+            "Ніколайчук Іван",
+            "Остапчук Ангеліна",
+            "Охват Софія",
+            "Пєшкова Поліна",
+            "Піроженко Анна",
+            "Саванчук Крістіна",
+            "Чермних Єгор"
+            "Бохонок Олеся"
+        ],
+        "7-Г": [
+            "Баличев Давід",
+            "Білоножкіна Вікторія",
+            "Бохонок Олеся"
+            "Григор'єв Максим",
+            "Єленич Софія",
+            "Жемчужникова Дар'я",
+            "Карп Христина",
+            "Карташов Михайло",
+            "Клименко Назар",
+            "Ковальов Володимир",
+            "Маслій Руслан",
+            "Мельников Тимур",
+            "Потребенко Меланія",
+            "Раєнко Таїсія",
+            "Саранін Олександр",
+            "Солодухіна Жанна",
+            "Сопель Максим",
+            "Стоянов Владислав",
+            "Чеховський Кирило",
+            "Чорний Акім",
+            "Шеремет Ернест"
+        ],
+        "7-Д": [
+            "Балинський Вячеслав",
+            "Бохонок Олеся"
+            "Бурлак Аміна",
+            "Ганошенко Маттіа",
+            "Грозивчак Олександр",
+            "Дойчева Ангеліна",
+            "Касьянова Аріна",
+            "Кербенко Артем",
+            "Ковальчук Глєб",
+            "Лебін Ярослав",
+            "Маслаков Артем",
+            "Масленніков Іван",
+            "Михайловська Катерина",
+            "Перепьолка Таїсія",
+            "Петрова Аріна",
+            "Прокопенко Ярослав",
+            "Семенов Семен",
+            "Ткаченко Демір"
+        ]
+    };
+
+    if (!localStorage.getItem('geo_device_token')) {
+        localStorage.setItem('geo_device_token', 'device_' + Math.random().toString(36).substr(2, 9));
+    }
+    const deviceToken = localStorage.getItem('geo_device_token');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('geo_topic1_submitted') === 'true') {
+            showAlreadySubmittedScreen();
+        }
+    });
+
+    function loadNames() {
+        const classVal = document.getElementById("studentClass").value;
+        const nameSelect = document.getElementById("studentName");
+        nameSelect.innerHTML = '<option value="">-- Обери своє ім\'я --</option>';
+        
+        if (classVal && studentsDb[classVal]) {
+            studentsDb[classVal].forEach(name => {
+                let op = document.createElement("option");
+                op.value = name; op.text = name;
+                nameSelect.appendChild(op);
+            });
+        }
+    }
+
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+
+        const scoreGR2 = parseInt(document.querySelector('input[name="q1"]:checked').value);
+        const scoreGR1 = parseInt(document.querySelector('input[name="q2"]:checked').value);
+        const scoreGR3 = parseInt(document.querySelector('input[name="q3"]:checked').value);
+        const totalScore = Math.round((scoreGR1 + scoreGR2 + scoreGR3) / 3);
+
+        let gaps = [];
+        if (scoreGR1 === 0) gaps.push("ГР1_Критика_джерел");
+        if (scoreGR2 === 0) gaps.push("ГР2_Масштаб_карт");
+        if (scoreGR3 === 0) gaps.push("ГР3_Пропорції_Землі");
+
+        const payload = {
+            studentName: document.getElementById('studentName').value,
+            studentClass: document.getElementById('studentClass').value,
+            totalScore: totalScore,
+            scoreGR1: scoreGR1,
+            scoreGR2: scoreGR2,
+            scoreGR3: scoreGR3,
+            gaps: gaps,
+            selfEvaluation: document.getElementById('selfEval').value,
+            deviceToken: deviceToken
+        };
+
+        let feedbackHTML = `<strong>Дякуємо, ${payload.studentName}!</strong><br><br>🏁 Твій географічний профіль сформовано:`;
+        feedbackHTML += `<br>🌟 <strong>Твої сильні сторони:</strong> Ти чудово впоратися з завданнями, де потрібно проявити логіку та кмітливість.`;
+        feedbackHTML += `<br>🚀 <strong>Напрямок руху:</strong> У вересні ми разом розберемо деякі тонкощі масштабу й тектоніки, щоб зробити тебе справжнім штурманом материків!`;
+
+        document.getElementById('profileFeedback').innerHTML = feedbackHTML;
+
+        if (GOOGLE_SCRIPT_URL === "ВАШ_URL_APPS_SCRIPT") {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+            return;
+        }
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loader').style.display = 'none';
+            if (data.result === 'already_exists') {
+                alert('Увага! Твої результати під цим іменем уже є в системі. Друга спроба не зараховується.');
+                showAlreadySubmittedScreen();
+            } else {
+                localStorage.setItem('geo_topic1_submitted', 'true');
+                document.getElementById('quizForm').style.display = 'none';
+                document.getElementById('resultArea').style.display = 'block';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('quizForm').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+        });
+    });
+
+    function showAlreadySubmittedScreen() {
+        document.getElementById('quizForm').style.display = 'none';
+        document.getElementById('intro').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('resultArea').innerHTML = `<h2>⚠️ Подорож завершено</h2><p>Твій пристрій уже надіслав дані для Теми 1 в журнал вчителя. Повторні спроби заблоковано для чистоти дослідження.</p>`;
+    }
+</script>
+
+</body>
+</html>
+
+</body>
+</html>
