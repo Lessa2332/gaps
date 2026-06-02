@@ -395,67 +395,68 @@
         }
     }
 
-    function submitGameData() {
-        const evalVal = document.getElementById("selfEval").value;
-        if (!evalVal) { alert("Будь ласка, заповніть фінальну самооцінку."); return; }
+function submitGameData() {
+    const evalVal = document.getElementById("selfEval").value;
+    if (!evalVal) { alert("Будь ласка, заповніть фінальну самооцінку."); return; }
 
-        document.getElementById("step-eval").classList.remove("active");
-        document.getElementById("loader").style.display = "block";
+    document.getElementById("step-eval").classList.remove("active");
+    document.getElementById("loader").style.display = "block";
 
-        // Формуємо результати за трьома групами (ГР) відповідно до програми НУШ
-        const scoreGR2 = playerAnswers.q1; // Картографія
-        const scoreGR1 = playerAnswers.q2; // Критика джерел та понять
-        const scoreGR3 = Math.round((playerAnswers.q3 + playerAnswers.q4) / 2); // Закономірності планети й Тектоніка
-        const totalScore = Math.round((scoreGR1 + scoreGR2 + scoreGR3) / 3);
+    // Формуємо результати за трьома групами (ГР) відповідно до програми НУШ
+    const scoreGR2 = playerAnswers.q1; // Картографія
+    const scoreGR1 = playerAnswers.q2; // Критика джерел та понять
+    const scoreGR3 = Math.round((playerAnswers.q3 + playerAnswers.q4) / 2); // Закономірності планети й Тектоніка
+    const totalScore = Math.round((scoreGR1 + scoreGR2 + scoreGR3) / 3);
 
-        let gaps = [];
-        if (playerAnswers.q1 === 0) gaps.push("ГР2_Класифікація_масштабів");
-        if (playerAnswers.q2 === 0) gaps.push("ГР1_Розрізнення_материків_і_частин_світу");
-        if (playerAnswers.q3 === 0) gaps.push("ГР3_Співвідношення_суходолу");
-        if (playerAnswers.q4 === 0) gaps.push("ГР3_Тектонічні_структури");
+    let gaps = [];
+    if (playerAnswers.q1 === 0) gaps.push("ГР2_Класифікація_масштабів");
+    if (playerAnswers.q2 === 0) gaps.push("ГР1_Розрізнення_материків_і_частин_світу");
+    if (playerAnswers.q3 === 0) gaps.push("ГР3_Співвідношення_суходолу");
+    if (playerAnswers.q4 === 0) gaps.push("ГР3_Тектонічні_структури");
 
-        const payload = {
-            studentName: document.getElementById('studentName').value,
-            studentClass: document.getElementById('studentClass').value,
-            totalScore: totalScore,
-            scoreGR1: scoreGR1,
-            scoreGR2: scoreGR2,
-            scoreGR3: scoreGR3,
-            gaps: gaps,
-            selfEvaluation: evalVal,
-            deviceToken: deviceToken
-        };
+    const payload = {
+        studentName: document.getElementById('studentName').value,
+        studentClass: document.getElementById('studentClass').value,
+        totalScore: totalScore,
+        scoreGR1: scoreGR1,
+        scoreGR2: scoreGR2,
+        scoreGR3: scoreGR3,
+        gaps: gaps,
+        selfEvaluation: evalVal,
+        deviceToken: deviceToken
+    };
 
-        let resultText = `<strong>Офіційний рапорт екіпажу:</strong><br><br>`;
-        resultText += `👤 Інспектор: <strong>${payload.studentName}</strong> (${payload.studentClass})<br>`;
-        resultText += `📊 Успішність перевірки: <strong>${totalScore}% точних рішень</strong>.<br><br>`;
-        resultText += `🌟 <strong>Статус:</strong> Зміну здано. Твої аналітичні навички допоможуть команді у вивченні літосферних плит та географічних закономірностей у вересні!`;
-        
-        document.getElementById("feedbackBox").innerHTML = resultText;
+    let resultText = `<strong>Офіційний рапорт екіпажу:</strong><br><br>`;
+    resultText += `👤 Інспектор: <strong>${payload.studentName}</strong> (${payload.studentClass})<br>`;
+    resultText += `📊 Успішність перевірки: <strong>${totalScore}% точних рішень</strong>.<br><br>`;
+    resultText += `🌟 <strong>Статус:</strong> Зміну здано. Твої аналітичні навички допоможуть команді у вивченні літосферних плит та географічних закономірностей у вересні!`;
+    
+    document.getElementById("feedbackBox").innerHTML = resultText;
 
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('loader').style.display = 'none';
-            if (data.result === 'already_exists') {
-                alert('Результати цієї зміни вже зафіксовані в системі.');
-                showLockScreen();
-            } else {
-                localStorage.setItem('geo_topic1_submitted', 'true');
-                document.getElementById('resultScreen').style.display = 'block';
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('loader').style.display = 'none';
+    // НАДШЕСТВІЄ НАД CORS: відправляємо як text/plain
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain' }, // Окреслено тут: змінено з application/json
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('loader').style.display = 'none';
+        if (data.result === 'already_exists') {
+            alert('Результати цієї зміни вже зафіксовані в системі.');
+            showLockScreen();
+        } else {
+            localStorage.setItem('geo_topic1_submitted', 'true');
             document.getElementById('resultScreen').style.display = 'block';
-        });
-    }
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('resultScreen').style.display = 'block';
+    });
+}
 
     function showLockScreen() {
         document.getElementById('step-login').style.display = 'none';
