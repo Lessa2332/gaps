@@ -43,6 +43,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .field-label{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;font-family:var(--font-mono)}
 select{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:var(--font-body);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7399' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s}
 select:focus{outline:none;border-color:var(--cyan)}
+
+/* Оце додаємо одразу нижче: */
+select option {
+  background-color: var(--card); /* темне тло картки із ваших :root стилів */
+  color: var(--text);            /* світлий текст із ваших :root стилів */
+}
 .btn-start{width:100%;padding:16px;background:var(--cyan);color:#060a14;border:none;border-radius:12px;font-family:var(--font-head);font-size:17px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:transform .15s,box-shadow .15s;text-transform:uppercase}
 .btn-start:active{transform:scale(.97)}
 .btn-start:hover{box-shadow:0 0 28px rgba(0,212,255,.35)}
