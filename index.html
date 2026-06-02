@@ -749,16 +749,27 @@ function submitData(){
   buildResult(payload,gr1pct,gr2pct,gr3pct,totalPct,gaps);
   
   document.getElementById('loader').style.display='flex';
-  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
+ fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
     .then(r=>r.json())
     .then(d=>{
       document.getElementById('loader').style.display='none';
       const n=document.getElementById('sent-ok');
-      n.style.display='block';
-      if(d.result!=='already_exists') localStorage.setItem('geo_topic2_submitted','true');
+      
+      if (d.result === 'already_exists') {
+        // Якщо скрипт таблиці зафіксував дублікат імені та класу:
+        n.style.borderColor = 'var(--red)';
+        n.innerHTML = '<div style="color:var(--red); text-align:center; font-weight:600;">⚠ ДОСТУП ОБМЕЖЕНО<br><span style="font-size:13px; color:#a0aec0; font-weight:400;">Твої результати для цієї теми вже зафіксовані в базі.</span></div>';
+        n.style.display = 'block';
+      } else {
+        // Якщо це перша відправка — все успішно:
+        n.style.display = 'block';
+        localStorage.setItem('geo_topic2_submitted','true');
+      }
     })
-    .catch(()=>{document.getElementById('loader').style.display='none';document.getElementById('sent-ok').style.display='block';});
-}
+    .catch(()=>{
+      document.getElementById('loader').style.display='none';
+      document.getElementById('sent-ok').style.display='block';
+    });
 
 function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
 
