@@ -743,7 +743,7 @@ function submitData(){
   buildResult(payload,gr1pct,gr2pct,gr3pct,totalPct,gaps);
   
   document.getElementById('loader').style.display='flex';
-  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
     .then(r=>r.json())
     .then(d=>{
       document.getElementById('loader').style.display='none';
